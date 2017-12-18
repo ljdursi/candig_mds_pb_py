@@ -1,0 +1,138 @@
+syntax = "proto3";
+package metadata;
+
+import "google/api/annotations.proto";
+
+service MetadataService {
+  rpc SearchIndividuals(SearchIndividualsRequest)
+    returns (SearchIndividualsResponse) {
+      option (google.api.http) = {
+        post: "/CanDIG/metadata/v0.1.0/individuals/search"
+        body: "*"
+      };
+    };
+  
+  rpc SearchBiosamples(SearchBiosamplesRequest)
+    returns (SearchBiosamplesResponse) {
+      option (google.api.http) = {
+        post: "/CanDIG/metadata/v0.1.0/biosamples/search"
+        body: "*"
+      };
+    };
+
+  rpc GetIndividual(GetIndividualRequest)
+    returns (Individual) {
+      option (google.api.http) = {
+        get: "/CanDIG/metadata/v0.1.0/individual/{individual_id}"
+      };
+    };
+
+  rpc GetBiosample(GetBiosampleRequest)
+    returns (Biosample) {
+        option (google.api.http) = {
+          get: "/CanDIG/metadata/v0.1.0/biosample/{biosample_id}"
+        };
+      };
+
+  rpc PutIndividual(Individual)
+    returns (PutIndividualResponse) {
+      option (google.api.http) = {
+        put: "/CanDIG/metadata/v0.1.0/individual"
+      };
+    };
+
+  rpc PutBiosample(Biosample)
+    returns (PutBiosampleResponse) {
+        option (google.api.http) = {
+          put: "/CanDIG/metadata/v0.1.0/biosample"
+        };
+      };
+}
+
+message SearchIndividualsRequest {
+  string name = 1;
+}
+
+message GetIndividualRequest {
+  string individual_id = 1;
+}
+
+message PutIndividualResponse {
+  string id = 1;    
+  bool success = 2;    
+}
+
+message PutBiosampleResponse {
+  string id = 1;    
+  bool success = 2;    
+}
+
+message SearchIndividualsResponse {
+  repeated Individual individuals = 1;
+}
+
+message SearchBiosamplesRequest {
+  string name = 1;
+  string individual_id = 2;
+}
+
+message GetBiosampleRequest {
+  string biosample_id = 1;
+}
+
+message SearchBiosamplesResponse {
+  repeated Biosample biosamples = 1;
+}
+
+message Individual {
+  string id = 1;
+  string dataset_id = 2;
+  string name = 3;
+  string description = 4;
+  string created = 5;
+  string updated = 6;
+  OntologyTerm species = 7;
+  OntologyTerm sex = 8;
+  Attributes attributes = 10;
+
+}
+
+message Biosample {
+  string id = 1;
+  string dataset_id = 2;
+  string name = 3;
+  string description = 4;
+  OntologyTerm disease = 5;
+  string created = 6;
+  string updated = 7;
+  string individual_id = 8;
+  Attributes attributes = 10;
+  string individual_age_at_collection = 11;
+}
+
+
+message AttributeValue {
+  oneof value {
+    string string_value = 1;
+    int64 int64_value = 2;
+    int32 int32_value = 3;
+    bool bool_value = 4;
+    double double_value = 5;
+    OntologyTerm ontology_term = 7;
+    Attributes attributes = 12;
+    AttributeValueList attribute_list = 13;
+  }
+}
+
+message AttributeValueList {
+  repeated AttributeValue values = 1;
+}
+
+message Attributes {
+  map<string, AttributeValueList> attr = 1;
+}
+
+message OntologyTerm {
+  string term_id = 1;
+  string term = 2;
+}
